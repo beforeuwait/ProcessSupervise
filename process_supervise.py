@@ -4,10 +4,19 @@
 import os
 import sys
 import psutil
+import logging
 import platform
 
-
 DEFAULT_ENCODING = 'utf-8'
+
+# logging
+
+logger = logging.getLogger('__main__')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(os.path.abspath('./ps_log.log'))
+fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(fmt)
+logger.addHandler(handler)
 
 # TypeCode
 _AllProcess = list
@@ -40,10 +49,11 @@ class ProcessSupervise:
         # 返回加工过后的task_list
         task_list = []
         # 开始处理
-        for task in self._task_ctx.split('\n'):
-            if task != '':
-                task_list.append(task.split('\t'))
-        self._task_list = task_list
+        if self._task_ctx is not None:
+            for task in self._task_ctx.split('\n'):
+                if task != '':
+                    task_list.append(task.split('\t'))
+            self._task_list = task_list
         return self._task_list
 
     @parse_task_list.setter
@@ -70,18 +80,17 @@ class ProcessSupervise:
         """
         # 将任务文本变成
         self.parse_task_list = task_ctx
-        task_list = self.parse_task_list
-        print(task_list)
+
         # 开始执行任务
         # 先确定操作系统,不同的操作系统，文件目录的表示不同
         system = platform.uname().system
 
         # 拿到当前的进程列表
         process_list = self.all_process_list
-        print(process_list)
         # task_list中每一个元素: [task_name, task_xxx.py, path]
-        for task in task_list:
+        for task in self.parse_task_list:
             if system == 'Windows':
+                # 就windows奇葩一些
                 execute_path = '\\'.join([task[-1], task[-2]])
             else:
                 execute_path = os.path.join(task[-1], task[-2])
@@ -96,10 +105,13 @@ class ProcessSupervise:
             if execute_path not in process_list:
                 # 执行该task
                 try:
-                    # os.system(cmd)
-                    pass
+                    os.system(cmd)
                 except Exception as e:
-                    print(e)
+                    logger.warning('进程启动失败\t{0}\n启动命令:\t{1}'.format(e, cmd))
+
+        # 腾内存
+        del self.parse_task_list
+        del self.all_process_list
 
     def kill_process(self, *args) -> None:
         """kill掉指定的进程
@@ -155,7 +167,7 @@ class ProcessSupervise:
         是否存活
         :return:
         """
-
+        pass
 
     def check_node_state(self) -> _NodeState:
         """返回当前节点的状态
