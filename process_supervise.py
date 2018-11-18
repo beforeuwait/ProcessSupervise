@@ -155,7 +155,7 @@ class ProcessSupervise:
                     # 判断cmdline的长度, 第一个参数是python 第二个是任务路径
                     if cmdline.__len__() > 1:
                         # 2018-11-18 这里修改，需要返回包括当前进程的pid
-                        process_list.append((cmdline[1], i)
+                        process_list.append((cmdline[1], i))
             except Exception as e:
                 print('error', e)
 
