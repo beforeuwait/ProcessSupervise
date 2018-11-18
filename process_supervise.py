@@ -86,7 +86,7 @@ class ProcessSupervise:
         system = platform.uname().system
 
         # 拿到当前的进程列表
-        process_list = self.all_process_list
+        process_list = [process[0] for process in self.all_process_list]
         # task_list中每一个元素: [task_name, task_xxx.py, path]
         for task in self.parse_task_list:
             if system == 'Windows':
@@ -119,6 +119,9 @@ class ProcessSupervise:
         :param args: 元组，进程列表,需要提供,((xxx.py, ptah), (xxx.py, path))
         :return:
         """
+        # 同进程启动类似
+        # 需要找到对应pid
+        # 然后通过 Process().kill()
         pass
 
     def search_all_process(self) -> _AllProcess:
@@ -139,6 +142,8 @@ class ProcessSupervise:
     def all_process_list(self) -> _AllProcess:
         """获取当前节点，全部的进程及执行路径
 
+        2018-11-18: 同时返回该进程，当前的pid
+
         """
         process_list = []
         for i in psutil.pids():
@@ -149,7 +154,8 @@ class ProcessSupervise:
                     cmdline = process.cmdline()
                     # 判断cmdline的长度, 第一个参数是python 第二个是任务路径
                     if cmdline.__len__() > 1:
-                        process_list.append(cmdline[1])
+                        # 2018-11-18 这里修改，需要返回包括当前进程的pid
+                        process_list.append((cmdline[1], i)
             except Exception as e:
                 print('error', e)
 
