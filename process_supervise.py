@@ -167,17 +167,14 @@ class ProcessSupervise:
         """腾内存"""
         self._process_list = None
 
-    # def check_process_state(self, execute_file_name) -> _ProcessState:
-    def check_all_process_state(self) -> _ProcessState:    
-        """返回当前节点该进程的状态
+    """
+    def check_process_state(self, execute_file_name) -> _ProcessState:
+        返回当前节点该进程的状态
         通过检测各个进程的执行路径，来确定该进程
         是否存活
         当前的cpu占用率，内存占用率等等等等
 
         # todo: 从指定状态，到返回全部python程序的状态
-        """
-        
-        """
         proc_state = {
             'pid': '',          # 该进程的pid
             'servival': 'gone', # 状态
@@ -202,8 +199,14 @@ class ProcessSupervise:
                 'memeory_percent': process.memory_percent()
             })
         return proc_state
-        """
+    """
+    def check_all_process_state(self) -> _ProcessState:    
         # 所有进程列表
+        # 返回当前节点该进程的状态
+        # 通过检测各个进程的执行路径，来确定该进程
+        # 是否存活
+        # 当前的cpu占用率，内存占用率等等等等
+
         all_process_state = []
 
         for proc in self.all_process_list:
@@ -231,9 +234,15 @@ class ProcessSupervise:
         disk占用率
         :return: 一个字典
         """
-        pass
+
+        return  {
+            'cpu_percent': psutil.cpu_percent(),    # cpu使用率
+            'memory_percent': psutil.virtual_memory().percent,  # 内存使用率
+            'disk_usage': psutil.disk_usage('/').percent,          # 硬盘使用率
+        }
 
 
+"""
 if __name__ == '__main__':
     ps = ProcessSupervise()
     index = open('./task_index.ini', 'r', encoding='utf8').read()
@@ -244,4 +253,7 @@ if __name__ == '__main__':
             'demo_parser.py',
             'demo_downloader.py', 
             'demo_seed.py')
-    ps.kill_process(task_2_kill_list)
+    # ps.kill_process(task_2_kill_list)
+    node_state = ps.check_node_state()
+    print(node_state)
+"""
