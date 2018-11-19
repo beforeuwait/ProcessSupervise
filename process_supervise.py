@@ -218,6 +218,9 @@ class ProcessSupervise:
             }
             all_process_state.append(proc_state)
         
+        # 腾内存
+        del self.all_process_list
+
         return all_process_state
 
 
