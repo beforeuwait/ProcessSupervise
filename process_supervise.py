@@ -23,6 +23,7 @@ _AllProcess = list
 _AProcessCmdline = list
 _NodeState = dict
 _TaskList = list
+_ProcessState = dict
 
 
 class ProcessSupervise:
@@ -125,9 +126,8 @@ class ProcessSupervise:
 
         task_list_2_kill = args[0]
         # 获取当前python相关的进程
-        process_list = self.all_process_list
         # 接下来检索对应的pid
-        kill_pids = [i[1] for i in process_list if i[0] in task_list_2_kill]
+        kill_pids = [i[1] for i in self.all_process_list if i[0] in task_list_2_kill]
         for pid in kill_pids:
             try:
                 process = psutil.Process(pid)
@@ -167,14 +167,59 @@ class ProcessSupervise:
         """腾内存"""
         self._process_list = None
 
-    def check_process_state(self, execute_path) -> None:
+    # def check_process_state(self, execute_file_name) -> _ProcessState:
+    def check_all_process_state(self) -> _ProcessState:    
         """返回当前节点该进程的状态
         通过检测各个进程的执行路径，来确定该进程
         是否存活
         当前的cpu占用率，内存占用率等等等等
-        :return:
+
+        # todo: 从指定状态，到返回全部python程序的状态
         """
-        pass
+        
+        """
+        proc_state = {
+            'pid': '',          # 该进程的pid
+            'servival': 'gone', # 状态
+            'cpu_percent': '',  # cpu占用率
+            'belong': '',       # 隶属于
+            'memeory_percent': '',  # 内存占用率
+
+        }
+        # 首先是检索出该进程的pid
+        pid = None
+        for proc in self.all_process_list:
+            if proc[0] == execute_file_name:
+                pid = proc[1]
+        
+        # 然后是汇报状态
+        if pid is not None:
+            proc_state.update({'servival': 'running'})
+            process = psutil.Process(pid)
+            proc_state.update({
+                'cpu_percent': process.cpu_percent(),
+                'belong': process.username(),
+                'memeory_percent': process.memory_percent()
+            })
+        return proc_state
+        """
+        # 所有进程列表
+        all_process_state = []
+
+        for proc in self.all_process_list:
+            process = psutil.Process(proc[1])
+            proc_state = {
+                'pid': proc[1],                         # 该进程的pid
+                'filename': proc[0],                    # 该进程执行文件
+                'servival': 'running',                  # 状态
+                'cpu_percent': process.cpu_percent(),   # cpu占用率
+                'belong': process.username(),           # 隶属于
+                'memeory_percent': process.memory_percent(),  # 内存占用率
+            }
+            all_process_state.append(proc_state)
+        
+        return all_process_state
+
 
     def check_node_state(self) -> _NodeState:
         """返回当前节点的状态
