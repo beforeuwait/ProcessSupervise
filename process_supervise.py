@@ -122,21 +122,21 @@ class ProcessSupervise:
         # 同进程启动类似
         # 需要找到对应pid
         # 然后通过 Process().kill()
-        pass
 
-    def search_all_process(self) -> _AllProcess:
-        """返回当前节点所有进程的pids
+        task_list_2_kill = args[0]
+        # 获取当前python相关的进程
+        process_list = self.all_process_list
+        # 接下来检索对应的pid
+        kill_pids = [i[1] for i in process_list if i[0] in task_list_2_kill]
+        for pid in kill_pids:
+            try:
+                process = psutil.Process(pid)
+                process.kill()
+            except Exception as e:
+                logger.info('kill\t{0}\t出错,没有当前进程\terror:\t{1}'.format(pid, e))
 
-        :return: 列表
-        """
-        pass
-
-    def get_pid_cmdline(self) -> _AProcessCmdline:
-        """获取当前的进程cmdline信息
-        大概获取
-        :return:
-        """
-        pass
+        # 腾内存
+        del self.all_process_list
 
     @property
     def all_process_list(self) -> _AllProcess:
@@ -171,6 +171,7 @@ class ProcessSupervise:
         """返回当前节点该进程的状态
         通过检测各个进程的执行路径，来确定该进程
         是否存活
+        当前的cpu占用率，内存占用率等等等等
         :return:
         """
         pass
@@ -188,4 +189,11 @@ class ProcessSupervise:
 if __name__ == '__main__':
     ps = ProcessSupervise()
     index = open('./task_index.ini', 'r', encoding='utf8').read()
-    ps.start_process(index)
+    # ps.start_process(index)
+
+    # 设定一个需要kil的元组列表
+    task_2_kill_list = ('demo_persistence.py', 
+            'demo_parser.py',
+            'demo_downloader.py', 
+            'demo_seed.py')
+    ps.kill_process(task_2_kill_list)
