@@ -17,3 +17,6 @@ NodeState需要执行的:
     2. 当前节点的状态
 
 """
+from .process_supervise import ProcessSupervise as PS
+
+__all__ = ['PS']

@@ -12,7 +12,7 @@ DEFAULT_ENCODING = 'utf-8'
 
 logger = logging.getLogger('__main__')
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(os.path.abspath('./ps_log.log'))
+handler = logging.FileHandler(os.path.join(os.path.split(__file__)[0], './ps_log.log'))
 fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(fmt)
 logger.addHandler(handler)
@@ -23,6 +23,7 @@ _AProcessCmdline = list
 _NodeState = dict
 _TaskList = list
 _ProcessState = list
+demo = 'nia'
 
 
 class ProcessSupervise:
@@ -106,6 +107,7 @@ class ProcessSupervise:
                 # 执行该task
                 try:
                     os.system(cmd)
+                    logger.debug('启动\t{0}'execute_path)
                 except Exception as e:
                     logger.warning('进程启动失败\t{0}\n启动命令:\t{1}'.format(e, cmd))
 
@@ -131,8 +133,9 @@ class ProcessSupervise:
             try:
                 process = psutil.Process(pid)
                 process.kill()
+                logger.debug('完成kill\t当前pid:\t{0}'.format(pid))
             except Exception as e:
-                logger.info('kill\t{0}\t出错,没有当前进程\terror:\t{1}'.format(pid, e))
+                logger.warning('kill\t{0}\t出错,没有当前进程\terror:\t{1}'.format(pid, e))
 
         # 腾内存
         del self.all_process_list
