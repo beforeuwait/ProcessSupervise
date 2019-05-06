@@ -23,6 +23,7 @@ NodeState需要执行的:
 2. kill进程
 
 """
-from .process_supervise import ProcessSupervise as PS
+# from .process_supervise import ProcessSupervise as PS
+from .processSupervise import ProcessSupervise as PS
 
 __all__ = ['PS']
