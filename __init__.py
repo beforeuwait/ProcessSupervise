@@ -15,6 +15,12 @@ __date__ = '2018-11-15'
 NodeState需要执行的:
     1. 根据 task_index.ini 来检索每个进程的状态
     2. 当前节点的状态
+========================分割线==============================
+2019-05-06: 
+我对ps的理解为,在调度下，作为监控的角色
+负责:
+1. 监听状态
+2. kill进程
 
 """
 from .process_supervise import ProcessSupervise as PS
